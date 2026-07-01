@@ -23,12 +23,12 @@ static const char unknown_str[] = "n/a";
  */
 
 static const struct arg args[] = {
-    /* Network: USB / WiFi signal / Offline */
-    { run_command,  "%s | ",              "if ip route get 1.1.1.1 2>/dev/null | grep -q 'enx'; then echo '󰁆 USB'; elif grep -q 'up' /sys/class/net/wlo1/operstate 2>/dev/null; then q=$(cat /proc/net/wireless 2>/dev/null | awk 'NR==3 {print int($4*100/70)}'); if [ $q -ge 80 ]; then echo '󰤨 WiFi' $q'%'; elif [ $q -ge 60 ]; then echo '󰤥 WiFi' $q'%'; elif [ $q -ge 40 ]; then echo '󰤢 WiFi' $q'%'; elif [ $q -ge 20 ]; then echo '󰤟 WiFi' $q'%'; else echo '󰤭 WiFi' $q'%'; fi; else echo '󰤭 Offline'; fi" },
+    /* Network: Ethernet / USB Tethering / WiFi (Icon ONLY, no numbers) / Offline */
+    { run_command,  "%s | ",              "if grep -q 'up' /sys/class/net/en*/operstate 2>/dev/null; then if ip route get 1.1.1.1 2>/dev/null | grep -q 'enx'; then echo ' 󰈁 USB '; else echo ' 󰈀 Wired '; fi; elif grep -q 'up' /sys/class/net/wlo1/operstate 2>/dev/null; then q=$(cat /proc/net/wireless 2>/dev/null | awk 'NR==3 {print int($3*100/70)}'); if [ $q -ge 80 ]; then echo ' 󰤨  '; elif [ $q -ge 60 ]; then echo ' 󰤥  '; elif [ $q -ge 40 ]; then echo ' 󰤢  '; elif [ $q -ge 20 ]; then echo ' 󰤟  ' ; else echo '󰤭 ' ; fi; else echo ' 󰪎 Offline '; fi" },
 
-    /* Battery: Shows different icons based on charge AND state (ternary chain) */
-    { run_command,  "%s | ",              "s=$(cat /sys/class/power_supply/BAT1/status); p=$(cat /sys/class/power_supply/BAT1/capacity); if [ \"$s\" = \"Charging\" ]; then echo \"󰂄 $p%\"; else case $p in 9[0-9]|100) echo \"󰁹 $p%\";; 7[0-9]|8[0-9]) echo \"󰂀 $p%\";; 5[0-9]|6[0-9]) echo \"󰁾 $p%\";; 3[0-9]|4[0-9]) echo \"󰁼 $p%\";; 1[0-9]|2[0-9]) echo \"󰁺 $p%\";; *) echo \"󰂎 $p%\";; esac; fi" },
-
+    /* Battery: Uses your system-compatible icons for both states with a '+' indicator for charging */
+/* Battery: Uses your reliable vertical icon sets, plus the nf-oct-plug glyph for charging status */
+    { run_command,  "%s | ",              "s=$(cat /sys/class/power_supply/BAT1/status 2>/dev/null); p=$(cat /sys/class/power_supply/BAT1/capacity 2>/dev/null); if [ \"$s\" = \"Charging\" ] || [ \"$s\" = \"Full\" ]; then case $p in 9[0-9]|100) echo \"󰁹  $p\";; 7[0-9]|8[0-9]) echo \"󰂀  $p\";; 5[0-9]|6[0-9]) echo \"󰁾  $p\";; 3[0-9]|4[0-9]) echo \"󰁼  $p\";; 1[0-9]|2[0-9]) echo \"󰁺  $p\";; *) echo \"󰂎  $p\";; esac; else case $p in 9[0-9]|100) echo \"󰁹 $p\";; 7[0-9]|8[0-9]) echo \"󰂀 $p\";; 5[0-9]|6[0-9]) echo \"󰁾 $p\";; 3[0-9]|4[0-9]) echo \"󰁼 $p\";; 1[0-9]|2[0-9]) echo \"󰁺 $p\";; *) echo \"󰂎 $p\";; esac; fi" },
     /* System */
     { ram_perc,      "󰍛 %s%% | ",         NULL },
     { cpu_perc,      "󰻠 %s%% | ",         NULL },
