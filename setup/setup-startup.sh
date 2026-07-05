@@ -12,6 +12,21 @@ else
     echo "⚠ Warning: ./picom.conf not found in the current directory!"
 fi
 
+echo "Setting up local bin utilities..."
+# Ensure local bin exists and copy the cheatsheet utility
+mkdir -p "$HOME/.local/bin"
+if [ -f "./setup/dwm-cheatsheet" ]; then
+    cp ./setup/dwm-cheatsheet "$HOME/.local/bin/dwm-cheatsheet"
+    chmod +x "$HOME/.local/bin/dwm-cheatsheet"
+    echo "✓ dwm-cheatsheet successfully copied to ~/.local/bin/"
+elif [ -f "./dwm-cheatsheet" ]; then
+    cp ./dwm-cheatsheet "$HOME/.local/bin/dwm-cheatsheet"
+    chmod +x "$HOME/.local/bin/dwm-cheatsheet"
+    echo "✓ dwm-cheatsheet successfully copied to ~/.local/bin/"
+else
+    echo "⚠ Warning: dwm-cheatsheet utility file not found!"
+fi
+
 echo "Setting up startup config..."
 
 # Detect if GDM session exists
